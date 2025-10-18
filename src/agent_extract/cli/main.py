@@ -135,13 +135,19 @@ def extract(
             task = progress.add_task("Extracting content...", total=None)
             
             if use_ai:
-                # Use AI-powered extraction
+                # Use AI-powered extraction with logging
                 progress.update(task, description="Initializing AI agents (qwen3 + gemma3)...")
+                
+                console.print("\n[bold cyan]AI Agent Workflow:[/bold cyan]")
+                
                 ai_extractor = AIDocumentExtractor(
                     use_vision=not no_vision,
                     use_basic_extraction=True,
                 )
-                result = ai_extractor.extract_sync(file_path)
+                
+                # Extract with agent callback for logging
+                result = _extract_with_logging(ai_extractor, file_path, console)
+                
                 progress.update(task, description="[green]OK[/green] AI extraction complete", completed=True)
             else:
                 # Use standard extraction
@@ -315,6 +321,128 @@ def version():
     console.print(f"[bold cyan]agent-extract[/bold cyan] version [green]{__version__}[/green]")
 
 
+def _extract_with_logging(ai_extractor, file_path, console):
+    """Extract with real-time agent logging."""
+    import asyncio
+    import time
+    
+    async def extract_with_progress():
+        """Run extraction with progress updates."""
+        start_time = time.time()
+        
+        # Step 1: Basic extraction
+        console.print("  [dim]→[/dim] Running Phase 1 extraction (OCR/PDF parsing)...")
+        basic_result = await ai_extractor._basic_extraction(file_path)
+        console.print(f"    [green]✓[/green] Text extracted: {len(basic_result.raw_text)} chars")
+        
+        # Step 2: Prepare state
+        initial_state = ai_extractor._prepare_agent_state(file_path, basic_result)
+        console.print("  [dim]→[/dim] Starting AI agent workflow...\n")
+        
+        # Step 3: Run agents with logging
+        final_state = await _run_agents_with_logging(
+            ai_extractor.agent_graph,
+            initial_state,
+            console
+        )
+        
+        # Step 4: Build result
+        processing_time = time.time() - start_time
+        result = ai_extractor._build_extraction_result(
+            file_path,
+            basic_result,
+            final_state,
+            processing_time,
+        )
+        
+        return result
+    
+    return asyncio.run(extract_with_progress())
+
+
+async def _run_agents_with_logging(graph, initial_state, console):
+    """Run agent graph with step-by-step logging."""
+    from langchain_core.runnables import RunnableConfig
+    
+    # Track which agents have run
+    agents_run = set()
+    step_count = 0
+    max_steps = 10  # Safety limit
+    
+    # Manual workflow execution with logging
+    state = initial_state
+    
+    # Step 1: Planner
+    console.print("  [yellow]1. Planner Agent[/yellow] - Creating extraction strategy...")
+    state = await graph.planner_agent.process(state)
+    plan = state.get("structured_data", {}).get("extraction_plan", {})
+    console.print(f"     [green]→[/green] Strategy: {plan.get('extraction_approach', 'unknown')} approach")
+    console.print(f"     [green]→[/green] Category: {plan.get('document_category', 'unknown')}")
+    
+    # Step 2-N: Supervisor loop
+    while state.get("next_action") != "complete" and step_count < max_steps:
+        step_count += 1
+        
+        # Supervisor decides
+        console.print(f"\n  [yellow]{step_count+1}. Supervisor Agent[/yellow] - Deciding next step...")
+        state = await graph.supervisor_agent.process(state)
+        next_action = state.get("next_action", "complete")
+        
+        if next_action == "complete":
+            console.print(f"     [green]→[/green] Decision: Workflow complete!")
+            break
+        
+        console.print(f"     [green]→[/green] Routing to: {next_action}")
+        
+        # Execute the chosen agent
+        step_count += 1
+        if next_action == "schema":
+            console.print(f"  [yellow]{step_count+1}. Schema Agent[/yellow] - Detecting document type...")
+            state = await graph.schema_agent.process(state)
+            schema = state.get("detected_schema", {})
+            console.print(f"     [green]→[/green] Type: {schema.get('document_type', 'unknown')}")
+            console.print(f"     [green]→[/green] Confidence: {schema.get('confidence', 0):.1%}")
+            
+        elif next_action == "extraction":
+            console.print(f"  [yellow]{step_count+1}. Extraction Agent[/yellow] - Extracting structured data...")
+            state = await graph.extraction_agent.process(state)
+            data = state.get("structured_data", {})
+            entities = state.get("entities", [])
+            console.print(f"     [green]→[/green] Fields extracted: {len([k for k in data.keys() if k not in ['extraction_plan', 'ai_processing', 'quality_critique']])}")
+            console.print(f"     [green]→[/green] Entities found: {len(entities)}")
+            
+        elif next_action == "table_parser":
+            console.print(f"  [yellow]{step_count+1}. Table Parser Agent[/yellow] - Analyzing tables...")
+            state = await graph.table_agent.process(state)
+            tables = state.get("tables", [])
+            console.print(f"     [green]→[/green] Tables processed: {len(tables)}")
+            
+        elif next_action == "vision" and graph.vision_agent:
+            console.print(f"  [yellow]{step_count+1}. Vision Agent (gemma3)[/yellow] - Analyzing image...")
+            state = await graph.vision_agent.process(state)
+            console.print(f"     [green]→[/green] Vision analysis complete")
+            
+        elif next_action == "critic":
+            console.print(f"  [yellow]{step_count+1}. Critic Agent[/yellow] - Validating quality...")
+            state = await graph.critic_agent.process(state)
+            critique = state.get("structured_data", {}).get("quality_critique", {})
+            console.print(f"     [green]→[/green] Quality: {critique.get('overall_quality', 'unknown')}")
+            console.print(f"     [green]→[/green] Confidence: {state.get('confidence_score', 0):.1%}")
+            console.print(f"     [green]→[/green] Verdict: {critique.get('final_verdict', 'unknown')}")
+            
+        else:
+            # Unknown action, complete
+            state["next_action"] = "complete"
+            break
+    
+    if step_count >= max_steps:
+        console.print(f"\n  [yellow]⚠[/yellow] Max steps reached ({max_steps}), completing extraction")
+    
+    console.print(f"\n  [bold green]✓ Workflow complete![/bold green] ({step_count} agent calls)\n")
+    
+    return state
+
+
 def _show_summary(result):
     """Show extraction summary."""
     console.print("\n[bold]Extraction Summary:[/bold]")
@@ -323,8 +451,21 @@ def _show_summary(result):
     console.print(f"  Text Length: [cyan]{len(result.raw_text)} characters[/cyan]")
     console.print(f"  Tables Found: [cyan]{len(result.tables)}[/cyan]")
     console.print(f"  Entities Found: [cyan]{len(result.entities)}[/cyan]")
+    
+    # Show AI processing info if available
+    ai_info = result.structured_data.get("ai_processing", {})
+    if ai_info:
+        console.print(f"  AI Agents Used: [cyan]{len(set(s.split(']')[0].replace('[', '') for s in ai_info.get('agents_used', []) if ']' in s))}[/cyan]")
+        detected_type = ai_info.get("detected_document_type")
+        if detected_type:
+            console.print(f"  Detected Type: [cyan]{detected_type}[/cyan]")
+    
     if result.processing_time:
         console.print(f"  Processing Time: [cyan]{result.processing_time:.2f}s[/cyan]")
+    
+    if result.confidence_score:
+        console.print(f"  Confidence Score: [cyan]{result.confidence_score:.1%}[/cyan]")
+    
     console.print()
 
 

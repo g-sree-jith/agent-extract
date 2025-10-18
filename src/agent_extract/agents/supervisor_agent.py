@@ -148,16 +148,24 @@ Which agent should execute next to best extract data from this document?"""
         """Fallback routing logic if LLM fails."""
         steps = len(state.get("processing_steps", []))
         
+        # Safety: prevent infinite loops
+        if steps > 8:
+            return "critic" if state.get("confidence_score", 0) == 0 else "complete"
+        
+        # Check what's been done
+        schema_done = state.get("document_type") is not None or state.get("detected_schema") is not None
+        extraction_done = bool(state.get("structured_data")) and len(state.get("entities", [])) > 0
+        tables_done = state.get("tables") is not None
+        has_confidence = state.get("confidence_score", 0) > 0
+        
         # Simple state machine fallback
-        if steps == 0:
-            return "planner"
-        elif not state.get("document_type"):
+        if not schema_done and steps < 3:
             return "schema"
-        elif not state.get("structured_data"):
+        elif not extraction_done and steps < 5:
             return "extraction"
-        elif state.get("tables") and steps < 6:
+        elif tables_done and len(state.get("tables", [])) > 0 and steps < 6:
             return "table_parser"
-        elif not state.get("confidence_score") or state["confidence_score"] == 0:
+        elif not has_confidence:
             return "critic"
         else:
             return "complete"

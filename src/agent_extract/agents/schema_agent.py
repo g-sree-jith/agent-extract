@@ -25,6 +25,14 @@ class SchemaDetectionAgent(BaseAgent):
         Returns:
             Updated state with detected document type and schema
         """
+        # Skip if already detected
+        if state.get("detected_schema") and state.get("document_type"):
+            return self._update_state(
+                state,
+                {"next_action": "extraction"},
+                "Schema already detected, skipping",
+            )
+        
         raw_text = state.get("raw_text", "")
         file_name = state.get("file_path", "")
 

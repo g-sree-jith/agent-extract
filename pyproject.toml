@@ -8,12 +8,10 @@ dependencies = [
     # Core dependencies
     "ipykernel>=6.30.1",
     "jupyter>=1.1.1",
-    
     # AI/LLM dependencies
     "langchain>=0.3.0",
     "langchain-ollama>=0.2.0",
     "langgraph>=0.2.0",
-    
     # Document parsing
     "pymupdf>=1.26.5",
     "pdfplumber>=0.11.0",
@@ -21,28 +19,23 @@ dependencies = [
     "openpyxl>=3.1.0",
     "pandas>=2.2.0",
     "unstructured>=0.10.0",
-    
     # OCR and image processing
-    "paddleocr>=2.7.0",
+    "paddleocr[all]>=2.7.0",
     "paddlepaddle>=2.6.0",
     "pytesseract>=0.3.10",
     "pdf2image>=1.17.0",
     "pillow>=11.3.0",
     "opencv-python>=4.9.0",
-    
     # Table extraction
     "camelot-py[cv]>=0.11.0",
     "tabulate>=0.9.0",
-    
     # Data validation and schemas
     "pydantic>=2.6.0",
     "pydantic-settings>=2.2.0",
-    
     # CLI and output
     "typer>=0.12.0",
     "rich>=13.7.0",
     "click>=8.1.0",
-    
     # Utilities
     "python-magic-bin>=0.4.14; sys_platform == 'win32'",
     "python-magic>=0.4.27; sys_platform != 'win32'",

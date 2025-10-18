@@ -25,6 +25,18 @@ class ContentExtractionAgent(BaseAgent):
         Returns:
             Updated state with extracted structured data
         """
+        # Skip if already extracted entities
+        existing_entities = state.get("entities", [])
+        existing_data = state.get("structured_data", {})
+        
+        # Check if extraction already done (has entities or substantial structured data)
+        if existing_entities and len(existing_entities) > 3:
+            return self._update_state(
+                state,
+                {"next_action": "critic"},
+                "Content already extracted, skipping",
+            )
+        
         raw_text = state.get("raw_text", "")
         detected_schema = state.get("detected_schema", {})
         document_type = detected_schema.get("document_type", "unknown")
