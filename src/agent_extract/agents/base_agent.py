@@ -2,10 +2,10 @@
 
 from abc import ABC, abstractmethod
 from typing import Dict, Any, Optional
-from langchain_ollama import ChatOllama
 from langchain_core.messages import SystemMessage, HumanMessage
 
 from agent_extract.core.config import config
+from agent_extract.core.llm_provider import LLMFactory
 from agent_extract.agents.state import AgentState
 
 
@@ -16,25 +16,26 @@ class BaseAgent(ABC):
         self,
         model_name: Optional[str] = None,
         temperature: float = 0.1,
-        base_url: Optional[str] = None,
+        provider: Optional[str] = None,
     ):
         """
         Initialize the base agent.
 
         Args:
-            model_name: Ollama model name (defaults to config.llm_model)
+            model_name: Model name (defaults to config.llm_model)
             temperature: LLM temperature
-            base_url: Ollama base URL
+            provider: LLM provider (ollama, openai, gemini, groq, anthropic)
         """
         self.model_name = model_name or config.llm_model
         self.temperature = temperature
-        self.base_url = base_url or config.llm_base_url
+        self.provider = provider or config.llm_provider
         
-        # Initialize LLM
-        self.llm = ChatOllama(
-            model=self.model_name,
+        # Initialize LLM using factory
+        self.llm = LLMFactory.create_llm(
+            provider=self.provider,
+            model_name=self.model_name,
             temperature=self.temperature,
-            base_url=self.base_url,
+            is_vision=False,
         )
         
         self.agent_name = self.__class__.__name__
@@ -107,7 +108,7 @@ class VisionAgent(BaseAgent):
         self,
         model_name: Optional[str] = None,
         temperature: float = 0.1,
-        base_url: Optional[str] = None,
+        provider: Optional[str] = None,
     ):
         """
         Initialize vision agent.
@@ -115,15 +116,22 @@ class VisionAgent(BaseAgent):
         Args:
             model_name: Vision model name (defaults to config.llm_vision_model)
             temperature: LLM temperature
-            base_url: Ollama base URL
+            provider: LLM provider
         """
-        # Use vision model by default
-        vision_model = model_name or config.llm_vision_model
-        super().__init__(
-            model_name=vision_model,
-            temperature=temperature,
-            base_url=base_url,
+        # Don't call super().__init__ to avoid double initialization
+        self.model_name = model_name or config.llm_vision_model
+        self.temperature = temperature
+        self.provider = provider or config.llm_provider
+        
+        # Initialize vision LLM using factory
+        self.llm = LLMFactory.create_llm(
+            provider=self.provider,
+            model_name=self.model_name,
+            temperature=self.temperature,
+            is_vision=True,
         )
+        
+        self.agent_name = self.__class__.__name__
 
     async def _invoke_vision_llm(
         self,

@@ -56,8 +56,14 @@ api = [
     "uvicorn[standard]>=0.27.0",
     "python-multipart>=0.0.9",
 ]
+cloud-llms = [
+    "langchain-openai>=0.2.0",
+    "langchain-google-genai>=2.0.0",
+    "langchain-groq>=0.2.0",
+    "langchain-anthropic>=0.3.0",
+]
 all = [
-    "agent-extract[dev,api]",
+    "agent-extract[dev,api,cloud-llms]",
 ]
 
 [project.scripts]
