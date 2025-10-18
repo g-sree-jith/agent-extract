@@ -103,7 +103,7 @@ Processing: invoice.pdf [AI: Local qwen3:0.6b]
 
 ```bash
 # Set API key first (one time)
-echo "GEMINI_API_KEY=AIzaSyBDYZUfYjwEM00m3OkN0FDGsczBlZRGYys" >> .env
+echo "GEMINI_API_KEY=your_api_key_here" >> .env
 
 # Extract with Gemini
 agent-extract extract invoice.pdf --ai --provider gemini -o result.json
@@ -189,7 +189,7 @@ Create `.env` in project root:
 
 ```env
 # For Gemini
-GEMINI_API_KEY=AIzaSyBDYZUfYjwEM00m3OkN0FDGsczBlZRGYys
+GEMINI_API_KEY=your_gemini_api_key_here
 
 # For OpenAI
 OPENAI_API_KEY=sk-your-key-here
