@@ -10,10 +10,10 @@ pip install -e .     # Or with pip
 
 ### Extract Single Document
 ```bash
-agent-extract document.pdf                              # Print to console
-agent-extract document.pdf -o result.json               # Save as JSON
-agent-extract document.pdf -f markdown -o result.md     # Save as Markdown
-agent-extract image.png --no-ocr                        # Skip OCR
+agent-extract extract document.pdf                              # Print to console
+agent-extract extract document.pdf -o result.json               # Save as JSON
+agent-extract extract document.pdf -f markdown -o result.md     # Save as Markdown
+agent-extract extract image.png --no-ocr                        # Skip OCR
 ```
 
 ### Batch Processing
@@ -108,7 +108,7 @@ LLM_BASE_URL=http://localhost:11434
 
 ### Invoice Processing
 ```bash
-agent-extract invoice.pdf -o invoice_data.json
+agent-extract extract invoice.pdf -o invoice_data.json
 ```
 
 ### Batch OCR

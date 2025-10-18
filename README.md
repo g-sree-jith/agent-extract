@@ -38,13 +38,13 @@ pip install -e .
 
 ```bash
 # Extract data from a PDF
-agent-extract document.pdf
+agent-extract extract document.pdf
 
 # Save as JSON
-agent-extract document.pdf --output result.json
+agent-extract extract document.pdf --output result.json
 
 # Extract as Markdown
-agent-extract document.pdf --format markdown --output result.md
+agent-extract extract document.pdf --format markdown --output result.md
 
 # Batch process multiple documents
 agent-extract batch ./documents ./output --format json
