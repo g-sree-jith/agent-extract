@@ -1,9 +1,14 @@
-# Agent-Extract Quick Reference Card
+# Agent-Extract Quick Reference
 
-## Installation
+> One-page cheat sheet for common tasks
+
+## ⚡ Installation
 ```bash
-uv sync              # Install with uv
-pip install -e .     # Or with pip
+git clone https://github.com/g-sree-jith/agent-extract.git
+cd agent-extract
+uv sync              # Install with uv (recommended)
+# OR
+pip install -e .     # Install with pip
 ```
 
 ## CLI Commands
@@ -99,8 +104,9 @@ OCR_LANGUAGE=en
 MAX_FILE_SIZE_MB=50
 DEFAULT_OUTPUT_FORMAT=json
 
-# LLM (Phase 2)
-LLM_MODEL=llama3.1
+# LLM (Phase 2) - Using local lightweight models
+LLM_MODEL=qwen3:0.6b              # 522MB, tool calling
+LLM_VISION_MODEL=gemma3:4b        # 3.3GB, vision
 LLM_BASE_URL=http://localhost:11434
 ```
 
@@ -159,9 +165,11 @@ pytest --cov=src/agent_extract    # With coverage
 ```
 
 ## Resources
-- 📖 Full docs: `README.md`
-- 🎓 Usage guide: `USAGE_GUIDE.md`
-- 🚀 Quick start: `docs/GETTING_STARTED.md`
-- 📋 Project plan: `PROJECT_PLAN.md`
+- 📖 **Main docs**: [README.md](README.md)
+- 🚀 **Quick start**: [docs/GETTING_STARTED.md](docs/GETTING_STARTED.md)
+- 🤖 **Local models**: [docs/LOCAL_MODELS.md](docs/LOCAL_MODELS.md)
+- 📋 **Roadmap**: [PROJECT_PLAN.md](PROJECT_PLAN.md)
+- 📝 **Changelog**: [CHANGELOG.md](CHANGELOG.md)
+- 🤝 **Contributing**: [CONTRIBUTING.md](CONTRIBUTING.md)
 
 

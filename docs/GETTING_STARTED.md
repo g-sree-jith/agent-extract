@@ -1,172 +1,114 @@
 # Getting Started with Agent-Extract
 
-## Quick Installation (5 minutes)
+> Get up and running in 5 minutes
 
-### Step 1: Clone or Download
+## 🚀 Quick Start
+
+### 1. Clone & Install (2 minutes)
 
 ```bash
+# Clone the repository
+git clone https://github.com/g-sree-jith/agent-extract.git
 cd agent-extract
-```
 
-### Step 2: Install Dependencies
-
-**Option A: Using uv (recommended)**
-```bash
+# Install dependencies
 uv sync
 ```
 
-**Option B: Using pip**
-```bash
-pip install -e .
-```
-
-**Option C: Using setup script**
-```bash
-python scripts/setup.py
-```
-
-### Step 3: Verify Installation
+### 2. Verify Installation (30 seconds)
 
 ```bash
 # Check version
-agent-extract version
+uv run agent-extract version
 
 # Show supported formats
-agent-extract info
+uv run agent-extract info
 ```
 
-## Your First Extraction
-
-### 1. Prepare a Document
-
-Place any of these documents in your `data/` folder:
-- PDF file (e.g., `invoice.pdf`)
-- Word document (e.g., `report.docx`)
-- Image file (e.g., `receipt.png`)
-
-### 2. Extract Data
+### 3. Extract Your First Document (1 minute)
 
 ```bash
-# Extract from PDF
-agent-extract data/invoice.pdf
+# Extract from a PDF
+uv run agent-extract extract your-document.pdf
 
 # Save as JSON
-agent-extract data/invoice.pdf --output result.json
+uv run agent-extract extract your-document.pdf --output result.json
 
 # Save as Markdown
-agent-extract data/invoice.pdf --format markdown --output result.md
+uv run agent-extract extract your-document.pdf --format markdown --output result.md
 ```
 
-### 3. View Results
+## 🎯 What You Get
 
-The extraction will show:
-- Document metadata (pages, size, type)
-- Extracted text content
-- Tables (if any)
-- Processing time
+Agent-Extract will extract:
+- ✅ Full text content from all pages
+- ✅ Tables with headers and data
+- ✅ Document metadata (pages, size, author)
+- ✅ Structured output in JSON or Markdown
 
-## Python API Example
+## 📝 Example Output
 
-Create a file `test_extraction.py`:
-
-```python
-from pathlib import Path
-from agent_extract.readers.factory import ReaderFactory
-from agent_extract.ocr.ocr_manager import OCRManager
-
-# Initialize
-ocr_engine = OCRManager.from_config()
-factory = ReaderFactory(ocr_engine=ocr_engine)
-
-# Extract
-result = factory.get_reader(Path("data/document.pdf")).read(Path("data/document.pdf"))
-
-# Show results
-print(f"📄 Document: {result.metadata.filename}")
-print(f"📊 Pages: {result.metadata.page_count}")
-print(f"📝 Text length: {len(result.raw_text)} characters")
-print(f"📋 Tables: {len(result.tables)}")
-print(f"⏱️  Time: {result.processing_time:.2f}s")
+**Input**: Invoice PDF  
+**Output**: 
+```json
+{
+  "metadata": {
+    "filename": "invoice.pdf",
+    "document_type": "pdf",
+    "page_count": 2
+  },
+  "raw_text": "Invoice #12345...",
+  "tables": [
+    {
+      "headers": ["Item", "Price"],
+      "rows": [["Product A", "$100"]]
+    }
+  ]
+}
 ```
 
-Run it:
+## 🐛 Common Issues
+
+### Issue: `ModuleNotFoundError`
 ```bash
-python test_extraction.py
-```
-
-## Common Use Cases
-
-### Invoice Processing
-
-```bash
-agent-extract invoice.pdf --format json --output invoice_data.json
-```
-
-### Batch Document Processing
-
-```bash
-agent-extract batch ./invoices ./output --pattern "*.pdf"
-```
-
-### Scanned Document OCR
-
-```bash
-agent-extract scanned_page.png --output extracted_text.json
-```
-
-## Troubleshooting
-
-### Issue: OCR not working
-
-**Solution 1:** Install PaddleOCR dependencies
-```bash
-pip install paddleocr paddlepaddle
-```
-
-**Solution 2:** Use Tesseract as fallback
-```bash
-# Install Tesseract
-# Windows: choco install tesseract
-# macOS: brew install tesseract
-# Linux: sudo apt-get install tesseract-ocr
-
-# Set in .env
-echo "OCR_ENGINE=tesseract" > .env
-```
-
-### Issue: Import errors
-
-```bash
-# Reinstall in editable mode
 pip install -e .
 ```
 
-### Issue: File too large
-
-Create `.env` file:
-```env
-MAX_FILE_SIZE_MB=100
+### Issue: OCR not working
+```bash
+# PaddleOCR will auto-install
+# For Tesseract: choco install tesseract (Windows)
 ```
 
-## What's Next?
+### Issue: Command not found
+```bash
+# Use with uv run
+uv run agent-extract extract document.pdf
+```
 
-1. **Read the [Usage Guide](../USAGE_GUIDE.md)** for detailed API documentation
-2. **Check the [Project Plan](../PROJECT_PLAN.md)** for upcoming features
-3. **Run the tests** to ensure everything works:
-   ```bash
-   pytest
-   ```
-4. **Try advanced features** like table extraction and batch processing
+## 📚 What's Next?
 
-## Need Help?
+1. **Quick commands**: See [QUICK_REFERENCE.md](../QUICK_REFERENCE.md)
+2. **Full documentation**: Read [README.md](../README.md)
+3. **Local AI models**: Check [LOCAL_MODELS.md](LOCAL_MODELS.md)
+4. **Project roadmap**: View [PROJECT_PLAN.md](../PROJECT_PLAN.md)
 
-- 📖 Read the full [README](../README.md)
-- 🔧 Check [Usage Guide](../USAGE_GUIDE.md)
-- 🐛 Report issues on GitHub
-- 💬 Join discussions
+## 💡 Quick Tips
+
+```bash
+# Batch process all PDFs in a folder
+uv run agent-extract batch ./documents ./output --pattern "*.pdf"
+
+# Extract from images (with OCR)
+uv run agent-extract extract scanned.png --output text.json
+
+# Get help anytime
+uv run agent-extract --help
+uv run agent-extract extract --help
+```
 
 ---
 
-**Ready to extract some documents? Let's go! 🚀**
+**That's it! You're ready to extract documents! 🎉**
 
-
+For detailed usage, see the [Quick Reference](../QUICK_REFERENCE.md) or [README](../README.md).
