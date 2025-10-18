@@ -65,24 +65,46 @@ def extract(
     use_ai: bool = typer.Option(
         False,
         "--ai",
-        help="Use AI-powered extraction with qwen3 and gemma3 (Phase 2)",
+        help="Use AI-powered extraction (Phase 2)",
     ),
     no_vision: bool = typer.Option(
         False,
         "--no-vision",
-        help="Disable vision model (gemma3) for AI extraction",
+        help="Disable vision model for AI extraction",
+    ),
+    llm_provider: str = typer.Option(
+        "ollama",
+        "--provider",
+        "-p",
+        help="LLM provider: 'ollama' (local, private) or 'gemini' (cloud, fast)",
+    ),
+    llm_model: str = typer.Option(
+        None,
+        "--model",
+        "-m",
+        help="Override model name (e.g., qwen3:0.6b, gemini-pro, gpt-4o-mini)",
     ),
 ):
     """
     Extract data from a document and output as JSON or Markdown.
     
     Examples:
+        # Standard extraction (fast)
         agent-extract extract document.pdf
-        agent-extract extract document.pdf --format markdown
-        agent-extract extract image.png --output result.json
-        agent-extract extract document.pdf --ai  # AI-powered extraction
+        
+        # AI with local models (private)
+        agent-extract extract document.pdf --ai --provider ollama
+        
+        # AI with Gemini (fast, requires API key)
+        agent-extract extract document.pdf --ai --provider gemini
+        
+        # Custom model
+        agent-extract extract document.pdf --ai --provider ollama --model qwen3:0.6b
     """
     try:
+        # Configure LLM provider based on user selection
+        if use_ai:
+            _configure_llm_provider(llm_provider, llm_model, console)
         # Validate output format
         if output_format.lower() not in ["json", "markdown", "md"]:
             console.print(
@@ -95,9 +117,17 @@ def extract(
         output_fmt = "markdown" if output_format.lower() == "md" else output_format.lower()
 
         # Show processing message
-        mode_text = "[AI Mode with qwen3 + gemma3]" if use_ai else "[Standard Mode]"
+        if use_ai:
+            from agent_extract.core.config import config as cfg
+            if llm_provider == "ollama":
+                mode_text = f"[AI: Local {cfg.llm_model}]"
+            else:
+                mode_text = f"[AI: {llm_provider.upper()} {llm_model or 'default'}]"
+        else:
+            mode_text = "[Standard]"
+        
         console.print(Panel.fit(
-            f"[bold cyan]Processing document:[/bold cyan] {file_path.name} {mode_text}",
+            f"[bold cyan]Processing:[/bold cyan] {file_path.name} {mode_text}",
             border_style="cyan"
         ))
 
@@ -441,6 +471,58 @@ async def _run_agents_with_logging(graph, initial_state, console):
     console.print(f"\n  [bold green]DONE Workflow complete![/bold green] ({step_count} agent calls)\n")
     
     return state
+
+
+def _configure_llm_provider(provider: str, model: str, console):
+    """Configure LLM provider based on user selection."""
+    from agent_extract.core.config import config
+    
+    # Validate provider
+    valid_providers = ["ollama", "gemini", "openai", "groq", "anthropic"]
+    if provider.lower() not in valid_providers:
+        console.print(f"[yellow]Warning:[/yellow] Unknown provider '{provider}'. Using 'ollama'")
+        provider = "ollama"
+    
+    # Set provider
+    config.llm_provider = provider.lower()
+    
+    # Set model if specified
+    if model:
+        config.llm_model = model
+        config.llm_vision_model = model
+    elif provider.lower() == "gemini":
+        # Auto-configure for Gemini
+        config.llm_model = "gemini-pro"
+        config.llm_vision_model = "gemini-pro"
+        
+        # Check API key
+        if not config.gemini_api_key:
+            console.print("[yellow]⚠ Warning:[/yellow] GEMINI_API_KEY not set. Set it in .env or environment")
+            console.print("   Example: $env:GEMINI_API_KEY=\"your_key_here\"")
+            console.print("   Falling back to Ollama...")
+            config.llm_provider = "ollama"
+            config.llm_model = "qwen3:0.6b"
+            config.llm_vision_model = "gemma3:4b"
+    elif provider.lower() == "openai":
+        config.llm_model = "gpt-4o-mini"
+        config.llm_vision_model = "gpt-4o"
+        
+        if not config.openai_api_key:
+            console.print("[yellow]⚠ Warning:[/yellow] OPENAI_API_KEY not set. Falling back to Ollama...")
+            config.llm_provider = "ollama"
+            config.llm_model = "qwen3:0.6b"
+    elif provider.lower() == "groq":
+        config.llm_model = "llama-3.3-70b-versatile"
+        
+        if not config.groq_api_key:
+            console.print("[yellow]⚠ Warning:[/yellow] GROQ_API_KEY not set. Falling back to Ollama...")
+            config.llm_provider = "ollama"
+            config.llm_model = "qwen3:0.6b"
+    
+    # Show what's being used
+    console.print(f"\n[dim]Using LLM Provider:[/dim] [cyan]{config.llm_provider}[/cyan]")
+    console.print(f"[dim]Text Model:[/dim] [cyan]{config.llm_model}[/cyan]")
+    console.print(f"[dim]Vision Model:[/dim] [cyan]{config.llm_vision_model}[/cyan]\n")
 
 
 def _show_summary(result):

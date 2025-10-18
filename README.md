@@ -37,14 +37,17 @@ pip install -e .
 ### Basic Usage
 
 ```bash
-# Extract data from a PDF
-agent-extract extract document.pdf
+# Standard extraction (fast ~1s)
+agent-extract extract document.pdf -o result.json
 
-# Save as JSON
-agent-extract extract document.pdf --output result.json
+# AI with local models (private, smart ~8-12s)
+agent-extract extract document.pdf --ai --provider ollama -o result.json
+
+# AI with Gemini (cloud, fast ~3-4s, requires API key)
+agent-extract extract document.pdf --ai --provider gemini -o result.json
 
 # Extract as Markdown
-agent-extract extract document.pdf --format markdown --output result.md
+agent-extract extract document.pdf --format markdown -o result.md
 
 # Batch process multiple documents
 agent-extract batch ./documents ./output --format json

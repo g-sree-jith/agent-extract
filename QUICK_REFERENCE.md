@@ -15,15 +15,24 @@ pip install -e .     # Install with pip
 
 ### Extract Single Document
 ```bash
-# Standard extraction (Phase 1 - Fast)
+# Standard extraction (Phase 1 - Fast ~1s)
 agent-extract extract document.pdf                              # Print to console
 agent-extract extract document.pdf -o result.json               # Save as JSON
 agent-extract extract document.pdf -f markdown -o result.md     # Save as Markdown
 
 # AI-Powered extraction (Phase 2 - Smart) 🤖
-agent-extract extract document.pdf --ai -o ai_result.json       # With qwen3 + gemma3
-agent-extract extract image.png --ai --no-vision -o result.json # AI without vision
-agent-extract extract form.pdf --ai                             # Best for forms/invoices
+
+# Local AI (Private, Free)
+agent-extract extract document.pdf --ai -o result.json          # Uses local qwen3
+agent-extract extract document.pdf --ai --provider ollama       # Explicit local
+
+# Cloud AI (Fast, Accurate) ⚡
+agent-extract extract document.pdf --ai --provider gemini       # Google Gemini
+agent-extract extract document.pdf --ai --provider openai       # OpenAI GPT
+agent-extract extract document.pdf --ai --provider groq         # Groq (fastest!)
+
+# Custom model
+agent-extract extract doc.pdf --ai -p ollama -m qwen3:0.6b      # Specific model
 ```
 
 ### Batch Processing
