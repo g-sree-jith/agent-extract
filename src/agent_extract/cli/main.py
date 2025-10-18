@@ -17,6 +17,7 @@ from agent_extract.readers.factory import ReaderFactory
 from agent_extract.ocr.ocr_manager import OCRManager
 from agent_extract.outputs.json_formatter import JSONFormatter
 from agent_extract.outputs.markdown_formatter import MarkdownFormatter
+from agent_extract.ai_extractor import AIDocumentExtractor
 
 app = typer.Typer(
     name="agent-extract",
@@ -61,14 +62,25 @@ def extract(
         "--no-ocr",
         help="Disable OCR for image extraction",
     ),
+    use_ai: bool = typer.Option(
+        False,
+        "--ai",
+        help="Use AI-powered extraction with qwen3 and gemma3 (Phase 2)",
+    ),
+    no_vision: bool = typer.Option(
+        False,
+        "--no-vision",
+        help="Disable vision model (gemma3) for AI extraction",
+    ),
 ):
     """
     Extract data from a document and output as JSON or Markdown.
     
     Examples:
-        agent-extract document.pdf
-        agent-extract document.pdf --format markdown
-        agent-extract image.png --output result.json
+        agent-extract extract document.pdf
+        agent-extract extract document.pdf --format markdown
+        agent-extract extract image.png --output result.json
+        agent-extract extract document.pdf --ai  # AI-powered extraction
     """
     try:
         # Validate output format
@@ -83,8 +95,9 @@ def extract(
         output_fmt = "markdown" if output_format.lower() == "md" else output_format.lower()
 
         # Show processing message
+        mode_text = "[AI Mode with qwen3 + gemma3]" if use_ai else "[Standard Mode]"
         console.print(Panel.fit(
-            f"[bold cyan]Processing document:[/bold cyan] {file_path.name}",
+            f"[bold cyan]Processing document:[/bold cyan] {file_path.name} {mode_text}",
             border_style="cyan"
         ))
 
@@ -120,8 +133,20 @@ def extract(
 
             # Extract content
             task = progress.add_task("Extracting content...", total=None)
-            result = reader.read(file_path)
-            progress.update(task, description="[green]OK[/green] Content extracted", completed=True)
+            
+            if use_ai:
+                # Use AI-powered extraction
+                progress.update(task, description="Initializing AI agents (qwen3 + gemma3)...")
+                ai_extractor = AIDocumentExtractor(
+                    use_vision=not no_vision,
+                    use_basic_extraction=True,
+                )
+                result = ai_extractor.extract_sync(file_path)
+                progress.update(task, description="[green]OK[/green] AI extraction complete", completed=True)
+            else:
+                # Use standard extraction
+                result = reader.read(file_path)
+                progress.update(task, description="[green]OK[/green] Content extracted", completed=True)
 
             # Format output
             task = progress.add_task("Formatting output...", total=None)

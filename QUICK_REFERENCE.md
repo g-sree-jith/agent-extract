@@ -15,10 +15,15 @@ pip install -e .     # Install with pip
 
 ### Extract Single Document
 ```bash
+# Standard extraction (Phase 1 - Fast)
 agent-extract extract document.pdf                              # Print to console
 agent-extract extract document.pdf -o result.json               # Save as JSON
 agent-extract extract document.pdf -f markdown -o result.md     # Save as Markdown
-agent-extract extract image.png --no-ocr                        # Skip OCR
+
+# AI-Powered extraction (Phase 2 - Smart) 🤖
+agent-extract extract document.pdf --ai -o ai_result.json       # With qwen3 + gemma3
+agent-extract extract image.png --ai --no-vision -o result.json # AI without vision
+agent-extract extract form.pdf --ai                             # Best for forms/invoices
 ```
 
 ### Batch Processing

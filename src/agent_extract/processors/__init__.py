@@ -1,5 +1,5 @@
 """Document processors for advanced extraction."""
 
-# Processors will be implemented in Phase 2
+from agent_extract.processors.preprocessor import ImagePreprocessor
 
-
+__all__ = ["ImagePreprocessor"]
