@@ -208,11 +208,25 @@ Contributions are welcome! Please read our contributing guidelines and submit pu
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
+## 💡 Recommended Local Models
+
+For Phase 2 AI features, we recommend these efficient local models:
+
+- **qwen3:0.6b** (522 MB) - Fast LLM with tool calling support
+- **gemma3:4b** (3.3 GB) - Vision model for image understanding
+
+```bash
+# Install with Ollama
+ollama pull qwen3:0.6b
+ollama pull gemma3:4b
+```
+
 ## 🙏 Acknowledgments
 
 - Inspired by [Landing.AI](https://landing.ai/) Document Intelligence
 - Built with [LangChain](https://www.langchain.com/) and [LangGraph](https://github.com/langchain-ai/langgraph)
 - OCR powered by [PaddleOCR](https://github.com/PaddlePaddle/PaddleOCR)
+- Optimized for lightweight local models (Qwen3, Gemma3)
 
 ## 📞 Support
 

@@ -130,12 +130,15 @@ dmypy.json
 *.manifest
 *.spec
 
+# Internal/Publishing documentation (not for public repo)
+PUBLISH_TO_GITHUB.md
+READY_TO_PUBLISH.md
+
 # Keep these important files (override patterns above)
 !README.md
 !PROJECT_PLAN.md
 !USAGE_GUIDE.md
 !QUICK_REFERENCE.md
-!PHASE1_COMPLETE.md
 !INSTALLATION.md
 !docs/**/*.md
 !.env.example

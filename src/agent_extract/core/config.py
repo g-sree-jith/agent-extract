@@ -24,9 +24,9 @@ class Config(BaseSettings):
     ocr_language: str = Field(default="en", description="OCR language")
     ocr_confidence_threshold: float = Field(default=0.5, description="Minimum OCR confidence")
     
-    # LLM settings
-    llm_model: str = Field(default="llama3.1", description="Ollama model name")
-    llm_vision_model: str = Field(default="llama3.2-vision", description="Vision model name")
+    # LLM settings (optimized for local models)
+    llm_model: str = Field(default="qwen3:0.6b", description="Ollama model name (tool calling)")
+    llm_vision_model: str = Field(default="gemma3:4b", description="Vision model name")
     llm_base_url: str = Field(default="http://localhost:11434", description="Ollama base URL")
     llm_temperature: float = Field(default=0.1, description="LLM temperature")
     llm_max_tokens: int = Field(default=4096, description="Max tokens for LLM")
