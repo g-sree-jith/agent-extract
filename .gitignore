@@ -1,0 +1,146 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv
+venv.bak/
+env.bak/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+*.sublime-project
+*.sublime-workspace
+
+# Testing
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+*.cover
+.hypothesis/
+.tox/
+.nox/
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+*.ipynb
+profile_default/
+ipython_config.py
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Cache
+.cache/
+*.cache
+__pycache__/
+
+# Models (downloaded/trained models - can be large)
+models/
+*.pth
+*.pt
+*.onnx
+*.pb
+*.h5
+*.pkl
+*.pickle
+
+# Data files (keep structure but ignore actual documents)
+data/*.pdf
+data/*.docx
+data/*.doc
+data/*.png
+data/*.jpg
+data/*.jpeg
+data/*.tiff
+data/*.tif
+data/*.bmp
+data/*.webp
+data/temp/
+data/cache/
+data/output/
+
+# Logs
+logs/
+*.log
+
+# Output files (test and temporary outputs)
+output/
+results/
+temp/
+test_*.json
+test_*.md
+result.json
+result.md
+test_output.md
+test_fixed.*
+*_output.*
+extracted_*
+
+# OS specific
+Thumbs.db
+.DS_Store
+desktop.ini
+
+# UV package manager
+.uv/
+
+# Type checkers
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+.pytype/
+
+# Linters
+.ruff_cache/
+.pylint.d/
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Keep these important files (override patterns above)
+!README.md
+!PROJECT_PLAN.md
+!USAGE_GUIDE.md
+!QUICK_REFERENCE.md
+!PHASE1_COMPLETE.md
+!INSTALLATION.md
+!docs/**/*.md
+!.env.example
+!data/.gitkeep
+!tests/fixtures/.gitkeep
+
+# Exclude notebook outputs but keep source notebooks in nbs/
+nbs/*.nbconvert.ipynb
