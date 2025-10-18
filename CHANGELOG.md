@@ -65,18 +65,71 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Personal documents excluded from repository
 - Environment variables for sensitive configuration
 
-## [Unreleased] - Phase 2 (Planned)
+## [0.2.0] - 2025-10-18
 
-### Planned - AI Intelligence Layer
+### Added - Phase 2: AI Intelligence Layer ✅
 
-- LangGraph multi-agent orchestration
-- Schema detection agent
-- Content extraction agent
-- Table parser agent
-- Validation agent
-- Vision model integration for layout analysis
-- Named entity recognition
-- Form field detection
+#### Supervisor-Planner-Critic Architecture
+- **Supervisor Agent** - Intelligent workflow orchestration and routing
+- **Planner Agent** - Creates extraction strategy per document
+- **Critic Agent** - Quality assurance and validation
+
+#### Specialized Sub-Agents
+- **Schema Detection Agent** - Automatic document type classification
+- **Content Extraction Agent** - Structured data and entity extraction  
+- **Table Parser Agent** - AI-enhanced table understanding
+- **Vision Agent** - Image layout analysis (gemma3:4b)
+
+#### LangGraph Integration
+- Multi-agent workflow orchestration
+- State management for agent communication
+- Conditional routing based on document type
+- Self-correcting workflow with critic feedback
+- Prevents infinite loops with safety checks
+
+#### AI Models
+- **qwen3:0.6b** (522 MB) - Primary LLM with tool calling
+- **gemma3:4b** (3.3 GB) - Vision model for images
+
+#### Features
+- Automatic document type detection (invoices, forms, tickets, etc.)
+- Named entity recognition (persons, dates, amounts, locations)
+- Key-value pair extraction
+- Confidence scoring
+- Quality validation
+- Adaptive extraction plans
+
+### CLI Enhancements
+- `--ai` flag for AI-powered extraction
+- `--no-vision` flag to skip vision model
+- Processing step tracking
+- AI agent status in output
+
+### Documentation
+- AGENT_WORKFLOW.md with Mermaid diagram
+- docs/PHASE2_AI_FEATURES.md guide
+- agent-orch.png visual workflow
+- Updated README with new architecture
+- Updated QUICK_REFERENCE with AI commands
+
+### Testing
+- Integration tests for agent workflow
+- Agent state management tests
+- Routing logic tests
+
+### Performance
+- Simple documents: 3-5 seconds
+- Complex forms: 8-12 seconds  
+- Scanned images: 10-15 seconds
+
+## [Unreleased] - Phase 2.1 (Optimizations)
+
+### Planned - Performance Improvements
+
+- Reduce agent workflow loops
+- Optimize supervisor routing logic
+- Cache LLM responses
+- Parallel agent execution where possible
 
 ## [Unreleased] - Phase 3 (Planned)
 
