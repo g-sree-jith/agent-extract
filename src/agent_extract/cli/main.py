@@ -331,13 +331,13 @@ def _extract_with_logging(ai_extractor, file_path, console):
         start_time = time.time()
         
         # Step 1: Basic extraction
-        console.print("  [dim]→[/dim] Running Phase 1 extraction (OCR/PDF parsing)...")
+        console.print("  [dim]>[/dim] Running Phase 1 extraction (OCR/PDF parsing)...")
         basic_result = await ai_extractor._basic_extraction(file_path)
-        console.print(f"    [green]✓[/green] Text extracted: {len(basic_result.raw_text)} chars")
+        console.print(f"    [green]+[/green] Text extracted: {len(basic_result.raw_text)} chars")
         
         # Step 2: Prepare state
         initial_state = ai_extractor._prepare_agent_state(file_path, basic_result)
-        console.print("  [dim]→[/dim] Starting AI agent workflow...\n")
+        console.print("  [dim]>[/dim] Starting AI agent workflow...\n")
         
         # Step 3: Run agents with logging
         final_state = await _run_agents_with_logging(
@@ -376,8 +376,8 @@ async def _run_agents_with_logging(graph, initial_state, console):
     console.print("  [yellow]1. Planner Agent[/yellow] - Creating extraction strategy...")
     state = await graph.planner_agent.process(state)
     plan = state.get("structured_data", {}).get("extraction_plan", {})
-    console.print(f"     [green]→[/green] Strategy: {plan.get('extraction_approach', 'unknown')} approach")
-    console.print(f"     [green]→[/green] Category: {plan.get('document_category', 'unknown')}")
+    console.print(f"     [green]+[/green] Strategy: {plan.get('extraction_approach', 'unknown')} approach")
+    console.print(f"     [green]+[/green] Category: {plan.get('document_category', 'unknown')}")
     
     # Step 2-N: Supervisor loop
     while state.get("next_action") != "complete" and step_count < max_steps:
@@ -389,10 +389,10 @@ async def _run_agents_with_logging(graph, initial_state, console):
         next_action = state.get("next_action", "complete")
         
         if next_action == "complete":
-            console.print(f"     [green]→[/green] Decision: Workflow complete!")
+            console.print(f"     [green]+[/green] Decision: Workflow complete!")
             break
         
-        console.print(f"     [green]→[/green] Routing to: {next_action}")
+        console.print(f"     [green]+[/green] Routing to: {next_action}")
         
         # Execute the chosen agent
         step_count += 1
@@ -400,35 +400,35 @@ async def _run_agents_with_logging(graph, initial_state, console):
             console.print(f"  [yellow]{step_count+1}. Schema Agent[/yellow] - Detecting document type...")
             state = await graph.schema_agent.process(state)
             schema = state.get("detected_schema", {})
-            console.print(f"     [green]→[/green] Type: {schema.get('document_type', 'unknown')}")
-            console.print(f"     [green]→[/green] Confidence: {schema.get('confidence', 0):.1%}")
+            console.print(f"     [green]+[/green] Type: {schema.get('document_type', 'unknown')}")
+            console.print(f"     [green]+[/green] Confidence: {schema.get('confidence', 0):.1%}")
             
         elif next_action == "extraction":
             console.print(f"  [yellow]{step_count+1}. Extraction Agent[/yellow] - Extracting structured data...")
             state = await graph.extraction_agent.process(state)
             data = state.get("structured_data", {})
             entities = state.get("entities", [])
-            console.print(f"     [green]→[/green] Fields extracted: {len([k for k in data.keys() if k not in ['extraction_plan', 'ai_processing', 'quality_critique']])}")
-            console.print(f"     [green]→[/green] Entities found: {len(entities)}")
+            console.print(f"     [green]+[/green] Fields extracted: {len([k for k in data.keys() if k not in ['extraction_plan', 'ai_processing', 'quality_critique']])}")
+            console.print(f"     [green]+[/green] Entities found: {len(entities)}")
             
         elif next_action == "table_parser":
             console.print(f"  [yellow]{step_count+1}. Table Parser Agent[/yellow] - Analyzing tables...")
             state = await graph.table_agent.process(state)
             tables = state.get("tables", [])
-            console.print(f"     [green]→[/green] Tables processed: {len(tables)}")
+            console.print(f"     [green]+[/green] Tables processed: {len(tables)}")
             
         elif next_action == "vision" and graph.vision_agent:
             console.print(f"  [yellow]{step_count+1}. Vision Agent (gemma3)[/yellow] - Analyzing image...")
             state = await graph.vision_agent.process(state)
-            console.print(f"     [green]→[/green] Vision analysis complete")
+            console.print(f"     [green]+[/green] Vision analysis complete")
             
         elif next_action == "critic":
             console.print(f"  [yellow]{step_count+1}. Critic Agent[/yellow] - Validating quality...")
             state = await graph.critic_agent.process(state)
             critique = state.get("structured_data", {}).get("quality_critique", {})
-            console.print(f"     [green]→[/green] Quality: {critique.get('overall_quality', 'unknown')}")
-            console.print(f"     [green]→[/green] Confidence: {state.get('confidence_score', 0):.1%}")
-            console.print(f"     [green]→[/green] Verdict: {critique.get('final_verdict', 'unknown')}")
+            console.print(f"     [green]+[/green] Quality: {critique.get('overall_quality', 'unknown')}")
+            console.print(f"     [green]+[/green] Confidence: {state.get('confidence_score', 0):.1%}")
+            console.print(f"     [green]+[/green] Verdict: {critique.get('final_verdict', 'unknown')}")
             
         else:
             # Unknown action, complete
@@ -436,9 +436,9 @@ async def _run_agents_with_logging(graph, initial_state, console):
             break
     
     if step_count >= max_steps:
-        console.print(f"\n  [yellow]⚠[/yellow] Max steps reached ({max_steps}), completing extraction")
+        console.print(f"\n  [yellow]![/yellow] Max steps reached ({max_steps}), completing extraction")
     
-    console.print(f"\n  [bold green]✓ Workflow complete![/bold green] ({step_count} agent calls)\n")
+    console.print(f"\n  [bold green]DONE Workflow complete![/bold green] ({step_count} agent calls)\n")
     
     return state
 

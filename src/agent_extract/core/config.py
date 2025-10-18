@@ -20,8 +20,8 @@ class Config(BaseSettings):
     default_output_format: str = Field(default="json", description="Default output format")
     
     # OCR settings
-    ocr_engine: str = Field(default="paddle", description="Default OCR engine")
-    ocr_language: str = Field(default="en", description="OCR language")
+    ocr_engine: str = Field(default="tesseract", description="Default OCR engine")
+    ocr_language: str = Field(default="eng", description="OCR language (tesseract: eng, paddle: en)")
     ocr_confidence_threshold: float = Field(default=0.5, description="Minimum OCR confidence")
     
     # LLM settings (optimized for local models)
