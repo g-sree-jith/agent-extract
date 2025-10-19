@@ -40,10 +40,10 @@ pip install -e .
 # Standard extraction (fast ~1s)
 agent-extract extract document.pdf -o result.json
 
-# AI with local models (private, smart ~8-12s)
-agent-extract extract document.pdf --ai --provider ollama -o result.json
+# AI-powered with Gemini (smart, fast ~3-4s)
+agent-extract extract document.pdf --ai -o result.json
 
-# AI with Gemini (cloud, fast ~3-4s, requires API key)
+# Or explicitly specify Gemini
 agent-extract extract document.pdf --ai --provider gemini -o result.json
 
 # Extract as Markdown

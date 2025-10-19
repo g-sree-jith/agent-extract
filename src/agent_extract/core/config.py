@@ -41,16 +41,16 @@ class Config(BaseSettings):
     
     # LLM settings (supports local and cloud providers)
     llm_provider: str = Field(
-        default="ollama",
-        description="LLM provider: ollama (local), openai, gemini, groq, anthropic"
+        default="gemini",
+        description="LLM provider: gemini (default), openai, groq, anthropic, ollama"
     )
     llm_model: str = Field(
-        default="qwen3:0.6b",
-        description="Model name (qwen3:0.6b for ollama, gpt-4o-mini for openai, etc.)"
+        default="gemini-pro",
+        description="Model name (gemini-pro for gemini, gpt-4o-mini for openai, etc.)"
     )
     llm_vision_model: str = Field(
-        default="gemma3:4b",
-        description="Vision model (gemma3:4b for ollama, gpt-4o for openai, etc.)"
+        default="gemini-pro",
+        description="Vision model (gemini-pro for gemini, gpt-4o for openai, etc.)"
     )
     llm_base_url: str = Field(default="http://localhost:11434", description="Ollama base URL")
     llm_temperature: float = Field(default=0.1, description="LLM temperature")

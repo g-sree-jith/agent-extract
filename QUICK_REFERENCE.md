@@ -22,14 +22,16 @@ agent-extract extract document.pdf -f markdown -o result.md     # Save as Markdo
 
 # AI-Powered extraction (Phase 2 - Smart) 🤖
 
-# Local AI (Private, Free)
-agent-extract extract document.pdf --ai -o result.json          # Uses local qwen3
-agent-extract extract document.pdf --ai --provider ollama       # Explicit local
+# Gemini AI (Default - Fast, Accurate) ⚡
+agent-extract extract document.pdf --ai -o result.json          # Uses Gemini
+agent-extract extract document.pdf --ai --provider gemini       # Explicit
 
-# Cloud AI (Fast, Accurate) ⚡
-agent-extract extract document.pdf --ai --provider gemini       # Google Gemini
+# Other Cloud Providers
 agent-extract extract document.pdf --ai --provider openai       # OpenAI GPT
 agent-extract extract document.pdf --ai --provider groq         # Groq (fastest!)
+
+# Local (if you have Ollama)
+agent-extract extract document.pdf --ai --provider ollama       # Local qwen3
 
 # Custom model
 agent-extract extract doc.pdf --ai -p ollama -m qwen3:0.6b      # Specific model
@@ -109,19 +111,24 @@ print(result.structured_data)
 
 ## Configuration (.env)
 
+Create `.env` file in project root:
+
 ```env
+# Gemini API (Required for AI extraction)
+GEMINI_API_KEY=your_gemini_api_key_here
+
+# LLM Settings
+LLM_PROVIDER=gemini
+LLM_MODEL=gemini-pro
+LLM_VISION_MODEL=gemini-pro
+
 # OCR
-OCR_ENGINE=paddle
-OCR_LANGUAGE=en
+OCR_ENGINE=tesseract
+OCR_LANGUAGE=eng
 
 # Processing
 MAX_FILE_SIZE_MB=50
 DEFAULT_OUTPUT_FORMAT=json
-
-# LLM (Phase 2) - Using local lightweight models
-LLM_MODEL=qwen3:0.6b              # 522MB, tool calling
-LLM_VISION_MODEL=gemma3:4b        # 3.3GB, vision
-LLM_BASE_URL=http://localhost:11434
 ```
 
 ## Common Patterns
