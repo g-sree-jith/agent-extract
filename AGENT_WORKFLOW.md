@@ -63,7 +63,7 @@ graph TD
 | **DOCX Reader** | Document parsing |
 | **OCR Engines** | PaddleOCR + Tesseract |
 
-## 🔄 Workflow Steps
+## 🔄 Workflow
 
 ### 1. Planner Agent 🧠
 **Input**: Raw document text  
